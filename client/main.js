@@ -365,7 +365,7 @@ define(["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], function(cookie
 
 			loadQueries(['chat-fetch_' + chat.lastID + '--' + (new Date().getTime() - chat.lastType < 1500) + '--' + (window._focused === true && dojo.hasClass(chat.node, 'chat-show'))], [{
 				_onquery : function(a) {
-					chat.parseQuery(_eval(a.value)[0]);
+					chat.parseQuery(a);
 				}
 			}]);
 
