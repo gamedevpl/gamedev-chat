@@ -1,7 +1,7 @@
 Gamedev Chat
 ============
 
-Chat for Warstat(http://www.gamedev.pl)
+Chat for Warsztat(http://www.gamedev.pl)
 
 # How tu run #
 
