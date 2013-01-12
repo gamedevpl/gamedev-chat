@@ -1,0 +1,306 @@
+@import "http://www.gamedev.pl/static/v1.css";
+
+div.chat {
+	border: 2px solid #efefff;
+	background: white;
+	padding: 2px 3px;
+	position: fixed;
+	bottom: 0px;
+	right: 0;
+    z-index: 9999;
+	box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
+}
+
+div.chat:not(.chat-show) {
+	width: 270px;
+}
+
+div.chat.chat-show {
+ 	max-width: 70%;
+    min-width: 50%;
+}
+
+ul.chat-members {
+	margin: 0;
+	float: right;
+	width: 140px;
+	margin-bottom: 32px;
+	cursor: pointer;
+	padding: 0px 10px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+ul.chat-members li {
+	font-weight: bold;
+	color: black;
+	width: 132px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	height: 32px;
+	font-size: 14px;
+	border: 1px solid #cecece;
+	background-color: rgba(235, 235, 235, 0.1);
+	padding: 2px 3px;
+	border-radius: 4px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	overflow: hidden;
+	line-height: 32px;
+	transition: background-color 0.2s linear, opacity 0.2s linear, border-color 0.2s linear;
+	-webkit-transition: background-color 0.2s linear, opacity 0.2s linear, border-color 0.2s linear;
+	-moz-transition: background-color 0.2s linear, opacity 0.2s linear, border-color 0.2s linear;	
+}
+
+ul.chat-members li.afk:not(.typing) {
+	color: #909090;
+	background-color: rgba(235, 235, 235, 0.5);
+}
+
+ul.chat-members li:hover {
+	color: black !important;
+	border: 1px solid #bebebe  !important;
+	background-color: rgba(235, 235, 235, 0.0)  !important;	
+	}
+
+ul.chat-members li.typing {
+	background: rgba(235, 235, 235, 0.2) url(chat-typing.png) right bottom no-repeat;
+ }
+ 
+ ul.chat-members li.typing.pulse {
+ }
+ 
+ ul.chat-members li span.avatar {
+float: left;
+border: 1px solid #EBF7FF;
+border-radius: 4px;
+background: white;
+margin-left: -3px;
+margin-top: -3px;
+margin-bottom: -6px;
+ }
+ 
+ ul.chat-members li img {
+   max-width: 32px;
+   max-height: 32px;
+   margin: 1px;
+ }
+ 
+ ul.chat-members li b {
+margin-left: 5px;
+ }
+
+div.chat ul.chat-msg {
+	margin-left: 0;
+	padding-left: 0;
+	margin-top: 5px;
+	overflow-y: auto;
+	margin-bottom: 0;
+}
+
+div.chat form.chat-inner {
+	border-top: 2px solid #c0c0c0;
+}
+
+div.chat-full-screen {
+	width: 100% !important;
+	height: 100% !important;
+	min-width: none !important;
+	max-width: none !important;
+	right: 0 !important;
+	box-sizing: border-box;
+    -moz-box-sizing: border-box;	
+}
+
+div.chat-full-screen div.chat-cont {
+	height: 100%;
+	margin-bottom: 0 !important;
+}
+
+div.chat-full-screen .chat-inner>table {
+	position: absolute;
+	bottom: 2px;
+}
+
+div.chat textarea {
+	resize: none; 
+	padding: 2px 5px;
+	box-sizing: border-box;
+	overflow: hidden;
+	position: relative;
+	right: 100px;
+	min-height: 38px;
+}
+
+div.chat table {
+	margin: 0px 0px 0px 0px;
+	margin-top: 10px;
+}
+
+div.chat table button {
+	float: right;
+}
+
+div.chat-full-screen input {
+	
+}
+
+div.chat-full-screen button {
+	
+}
+
+div.chat span {
+	margin-left: 5px;
+	word-wrap: break-word;
+}
+
+div.chat li>span.ts {	
+	width: 70px;
+	float: right;
+	position: relative;
+	z-index: 2;
+}
+
+div.chat li>span.ts+strong {
+	width: 10%;
+	margin-left: 5px;
+	float: left;
+	text-overflow: ellipsis;
+	text-align: right;
+	overflow-x: hidden;
+}
+
+div.chat li>span.ln {
+	display: block;
+	margin-top: -1em;
+	position: relative;
+	top: -3px;
+	z-index: 1;
+	background: #F6F6F6;
+	padding: 5px;	
+	white-space: -moz-pre-wrap;
+	/* @alternate */ white-space: -pre-wrap;
+	/* @alternate */ white-space: -o-pre-wrap;
+	/* @alternate */ white-space: pre-wrap;
+	/* @alternate */ word-wrap: break-word;
+	max-height: 100px;
+	overflow-y: auto;
+	border-radius: 4px;
+}
+
+div.chat input {
+	width: 100%;
+	float: left;
+}
+
+div.chat-show span.chat-open {
+	display: none;
+	visibility: hidden;
+}
+
+form.chat-inner,div.chat ul,div.chat button,div.chat input,div.chat p.chat-login,div.chat span.chat-close,div.chat span.chat-fs,div.chat span.chat-br
+	{
+	display: none;
+	visibility: hidden;
+}
+
+div.chat-show form.chat-inner,div.chat-show ul,div.chat-show button,div.chat-show input,div.chat-show p.chat-login,div.chat-show span.chat-close,div.chat-show span.chat-fs,div.chat-show span.chat-br
+	{
+	display: inherit !important;
+	visibility: visible !important;
+}
+
+/*div.chat button {
+	background: none repeat scroll 0 0 #DEDEDE;
+	border: 1px solid #ABADB3;
+	color: #707070;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 5px 10px;
+	float: right;
+	width: 80px;
+	height: 31px;
+}*/
+
+div.chat h4 {
+	margin: 0;
+	height: 32px;
+	font-size: x-large;
+	background: url(chat.png) left top no-repeat;
+	padding-left: 40px;
+}
+
+li.chli strong {
+	margin-left: 5px;
+	margin-right: 3px;
+}
+
+span.chat-close,span.chat-fs,span.chat-br,span.chat-open {
+	float: right;
+	font-size: small;
+	line-height: 32px;
+	color: #707070;
+	font-weight: bold;
+	cursor: pointer
+}
+
+span.chat-br {
+	cursor: none !important;
+}
+
+span.chat-close:hover,span.chat-fs:hover,span.chat-open:hover {
+	text-decoration: underline;
+}
+
+div.chat div.chat-shadow-v {
+	height: 100%;
+	margin-left: -25px;
+	margin-top: -22px;
+	position: absolute;
+	top: 0;
+	width: 20px;
+}
+
+div.chat div.chat-shadow-h {
+	height: 20px;
+	margin-left: -25px;
+	margin-top: -22px;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+div.chat-shadow-h div.shadow-cell {
+	background: none repeat scroll 0 0 black;
+	width: 100%;
+	height: 2px;
+	padding-right: 42px;
+}
+
+div.chat-shadow-v div.shadow-cell {
+	background: none repeat scroll 0 0 black;
+	width: 2px;
+	height: 100%;
+	float: left;
+	padding-bottom: 29px;
+}
+
+div.chat li {
+	list-style: none;
+	margin-left: 0;
+	font-size: smaller;
+	clear: both;
+}	
+	
+div.chat .chat-msg li {
+	margin-top: 20px;
+}
+
+div.chat li.-special {
+	margin-top: 0px;
+	padding-left: 10%;
+}
+
+div.chat li.-special>i {
+	margin-left: 10px;
+}

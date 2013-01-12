@@ -1,4 +1,14 @@
-define(function() {
+define(["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], function(cookie) {
+	function align10(v) {
+		v = parseInt(v);
+		if (!v)
+			return '00'
+		else if (v >= 10)
+			return v;
+		else
+			return '0' + v;
+	}
+	
 	return function Chat() {
 		this.node = dojo.create('div', {
 			className : 'chat'
@@ -353,26 +363,32 @@ define(function() {
 				return;
 			}
 
-			dojo.xhrPost({
-				errors : 0,
-				url : '/cmd-query',
-				content : {
-					query : 'chat-fetch_' + chat.lastID + '--' + (new Date().getTime() - chat.lastType < 1500) + '--' + (window._focused === true && dojo.hasClass(chat.node, 'chat-show')),
-					wait : true
-				},
-				error : function() {
-					var params = this;
-					if (params.errors++ > 20)
-						return;
-					chat.updateTimeout = setTimeout(function() {
-						chat.updateTimeout = null;
-						dojo.xhrPost(params);
-					}, 1000);
-				},
-				load : function(a) {
-					chat.parseQuery(_eval(a)[0]);
+			loadQueries(['chat-fetch_' + chat.lastID + '--' + (new Date().getTime() - chat.lastType < 1500) + '--' + (window._focused === true && dojo.hasClass(chat.node, 'chat-show'))], [{
+				_onquery : function(a) {
+					chat.parseQuery(_eval(a.value)[0]);
 				}
-			})
+			}]);
+
+			// dojo.xhrPost({
+			// errors : 0,
+			// url : '/cmd-query',
+			// content : {
+			// query : ,
+			// wait : true
+			// },
+			// error : function() {
+			// var params = this;
+			// if (params.errors++ > 20)
+			// return;
+			// chat.updateTimeout = setTimeout(function() {
+			// chat.updateTimeout = null;
+			// dojo.xhrPost(params);
+			// }, 1000);
+			// },
+			// load : function(a) {
+			// chat.parseQuery(_eval(a)[0]);
+			// }
+			// })
 		};
 
 		dojo.connect('onresize', this.node, function() {

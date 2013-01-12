@@ -1,0 +1,37 @@
+<!-- chat template -->
+<div class="chat-cont">
+    <span class="chat-close" onclick="chat.close()">Zamknij (ESC)</span>
+    <span class="chat-br">|</span>
+    <span class="chat-fs" onclick="dojo.toggleClass(chat.node, 'chat-full-screen');"> Full screen
+    </span>
+    <span class="chat-open" onclick="chat.show()">Pokaż</span>
+    <h4>
+        #warsztat
+        <span id="chat-uread"></span>
+    </h4>
+    <form class="chat-inner" onsubmit="chat.submit(this); return false">
+        <ul class="chat-members">
+        </ul>
+        <ul class="chat-msg">
+        </ul>
+        <div class="clb">
+        </div>
+        <strong class="name" style="display: none">Edytorek</strong>
+        <table style="width: 100%" cellspacing="0" cellpadding="0">
+            <tr>
+                <td style="padding-left: 100px;">
+                    <textarea name="msg" class="autogrow trim">
+                    </textarea>
+                </td>
+                <td style="width: 0px" valign="top">
+                    <div style="position: absolute;width: 100px;margin-left: -93px;">
+                        <button class="button" style="width: 100%"> Wyślij
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="clb">
+        </div>
+    </form>
+</div>
