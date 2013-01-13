@@ -34,7 +34,11 @@ window["queryAdapters"] = new (function() {
 window["loadQueries"] = function(queries, elements) {
 	queries.every(function(query, i) {
 		var node = elements[i];
-
+		
+		// synchronous queries
+		if(query.indexOf('@') == 0)
+			query = query.substring(1);
+		
 		var command = query.split('_')[0];
 		var params = query.substring(command.length);
 
