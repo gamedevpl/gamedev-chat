@@ -454,6 +454,6 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 			}
 		}
 
-		loadQueries(['chat-init'], [this.node]);
+		loadQueries(['@chat-init'], [this.node]);
 	}
 });
