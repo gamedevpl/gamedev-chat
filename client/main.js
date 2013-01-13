@@ -1,4 +1,4 @@
-define(["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], function(cookie) {
+define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], function(cookie) {
 	function align10(v) {
 		v = parseInt(v);
 		if (!v)
