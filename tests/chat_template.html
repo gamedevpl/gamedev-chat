@@ -10,27 +10,20 @@
         <span id="chat-uread"></span>
     </h4>
     <form class="chat-inner" onsubmit="chat.submit(this); return false">
-        <ul class="chat-members">
-        </ul>
+    	<div class="align-right">
+			<ul class="chat-members"></ul>
+			<button class="button">Wyślij</button>
+		</div>
         <ul class="chat-msg">
         </ul>
         <div class="clb">
         </div>
         <strong class="name" style="display: none">Edytorek</strong>
-        <table style="width: 100%" cellspacing="0" cellpadding="0">
-            <tr>
-                <td style="padding-left: 100px;">
-                    <textarea name="msg" class="autogrow trim">
-                    </textarea>
-                </td>
-                <td style="width: 0px" valign="top">
-                    <div style="position: absolute;width: 100px;margin-left: -93px;">
-                        <button class="button" style="width: 100%"> Wyślij
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div class="align-bottom">
+			<div class="form">
+				<div contenteditable="true" name="msg" class="input autogrow trim"></div>
+			</div>
+        </div>
         <div class="clb">
         </div>
     </form>
