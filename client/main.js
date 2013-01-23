@@ -19,7 +19,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 					chat.msgNode.removeChild(chat.msgNode.firstChild);
 					chat.msgCount--;
 				}
-			chat.msgNode.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
+			chat.msgNode.style.maxHeight = dojo.window.getBox().h - 85 + 'px';
 
 			if (!this.scrollBlock)
 				chat.msgNode.scrollTop = chat.msgNode.scrollHeight;
@@ -35,7 +35,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 					path : '/',
 					expires : 7
 				})
-			dojo.query('textarea', chat.node).forEach(function(input) {
+			dojo.query('.input', chat.node).forEach(function(input) {
 				input.focus()
 			});
 		};
@@ -45,24 +45,24 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 		this["submitNode"] = [];
 
 		this["submit"] = function(form) {
-			var input = dojo.query('textarea', form)[0];
-			if (input.value.length == 0)
+			var input = dojo.query('.input', form)[0];
+			if (input.innerHTML.length == 0)
 				return;
 
-			if (input.value.length > 2048)
-				input.value = input.value.substring(0, 2048);
+			if (input.innerHTML.length > 2048)
+				input.innerHTML = input.innerHTML.substring(0, 2048);
 			var dt = new Date();
 			var node = dojo.create('li', {
 				className : 'chli snt',
 				innerHTML : '<span class="ts">[' + align10(dt.getHours()) + ':' + align10(dt.getMinutes()) + ':' + align10(dt.getSeconds()) + ']</span><strong>' + chat.name + '</strong>'
-						+ '<span class="ln">' + chat.parsers.parse(input.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')) + '</span><div class="clb"></div>'
+						+ '<span class="ln">' + chat.parsers.parse(input.innerHTML.replace(/&nbsp;/g, ' ').replace(/<br>/g, '\n').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')) + '</span><div class="clb"></div>'
 			}, chat.msgNode, 'last');
 			this.scrollBlock = false;
 			this.shrink();
-			chat.submitQ.push('chat-send_' + input.value);
+			chat.submitQ.push('chat-send_' + input.innerHTML);
 			chat.submitNode.push(node);
 			chat.msgCount++;
-			input.value = '';
+			input.innerHTML = '';
 			if (chat.updateTimeout) {
 				clearTimeout(chat.updateTimeout);
 				chat.update();
@@ -72,7 +72,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 		this["msgCount"] = 0;
 		this["lastID"] = '-0000000000000';
 		this["memberClick"] = function() {
-			var input = dojo.query('form textarea', chat.node)[0];
+			var input = dojo.query('form .input', chat.node)[0];
 			var name = dojo.query('b', this)[0].innerHTML;
 			if (input && input.value.indexOf('@' + name + ' ') == -1)
 				input.value = '@' + name + ' ' + input.value;
@@ -401,7 +401,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 		});
 
 		this.node._onquery = function() {
-			dojo.query('textarea', this).connect("onkeydown", function(event) {
+			dojo.query('.input', this).connect("onkeydown", function(event) {
 				if (event.keyCode == 27)
 					chat.close();
 				if (event.keyCode == 13 && !event.shiftKey) {
