@@ -14,10 +14,10 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 						className: 'chat'
 					}, dojo.body(), 'last');
 
-			function getSetting(name) {
+			function getSetting(name, defaultValue) {
 				return dojo.query('.chat-settings .' + name, node).map(function(el) {
 					return el.className.split(name + ' ')[1];
-				})[0]
+				})[0] || defaultValue
 			}
 
 			this["shrink"] = function() {
@@ -136,8 +136,8 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 								onclick: chat.memberClick,
 								className: 'u_' + alias
 							}, chat.membersNode, 'first')
-						if (getSetting('chat-onjoin') != 'ignore')
-							return { content: ' <i>' + name + ' dołącza do czatu.</i>', silent: getSetting('chat-onjoin') !== 'title' };
+						if (getSetting('chat-onjoin', 'title') != 'ignore')
+							return { content: ' <i>' + name + ' dołącza do czatu.</i>', silent: getSetting('chat-onjoin', 'title') !== 'title' };
 					}
 				},
 				'leave': function(el) {
@@ -147,8 +147,8 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 					if (chat.membersHash[name] && (dojo.query('.u_' + alias, chat.membersNode)[0])) {
 						chat.membersNode.removeChild(chat.membersHash[name]);
 						chat.membersHash[name] = null;
-						if (getSetting('chat-onleave') != 'ignore')
-							return { content: ' <i>' + name + ' opuszcza czat.</i>', silent: getSetting('chat-onleave') !== 'title' };
+						if (getSetting('chat-onleave', 'title') != 'ignore')
+							return { content: ' <i>' + name + ' opuszcza czat.</i>', silent: getSetting('chat-onleave', 'title') !== 'title' };
 					}
 				}
 			};
@@ -288,7 +288,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 						if (cookieTS != null && el.id > cookieTS || !cookieTS)
 							chat.unreadCount++;
 
-						if (!special && getSetting('chat-onmsg') !== 'title')
+						if (!special && getSetting('chat-onmsg', 'title') !== 'title')
 							chat.unreadCount--;
 
 						chat.lastID = chat.lastTS > el.id ? chat.lastTS : el.id;
