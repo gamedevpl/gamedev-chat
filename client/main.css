@@ -1,15 +1,18 @@
-@import "http://www.gamedev.pl/static/v1.css";
-
 div.chat {
-	border: 2px solid #efefff;
-	background: white;
-	padding: 2px 3px;
 	position: fixed;
 	bottom: 0px;
 	right: 0;
+	border: 2px solid #efefff;
+	background: white;
+	padding: 4px;
     z-index: 9999;
-	box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
-	overflow: hidden;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+	font-family: Arial;
+	box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+	border-radius: 5px 0 0 0;
+	min-height: 40px;
 }
 
 div.chat:not(.chat-show) {
@@ -17,28 +20,58 @@ div.chat:not(.chat-show) {
 }
 
 div.chat.chat-show {
- 	max-width: 70%;
-    min-width: 50%;
+    width: 50%;
+ 	height: 100%;
+	border-radius: 0;
+}
+
+div.chat .chat-cont {
+	height: 100%;
+	position: relative;
+}
+
+div.chat header {
+	height: 32px;
+	background: white;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+}
+
+div.chat .chat-inner {
+	position: relative;
+	border-top: 34px solid #c0c0c0;
+	border-bottom: 49px solid transparent;
+	height: 100%;
+	box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+	overflow: hidden;
+}
+
+div.chat-full-screen {
+	width: 100% !important;
+	height: 100% !important;
+	min-width: none !important;
+	max-width: none !important;
 }
 
 ul.chat-members {
 	margin: 0;
 	float: right;
-	width: 160px;
+	width: 140px;
+	margin-bottom: 32px;
 	cursor: pointer;
+	padding: 0px 10px;
 	overflow-y: auto;
 	overflow-x: hidden;
-	height: calc(100% - 45px);
-	border-bottom: 1px solid #ccc;
-	padding-left: 5px;
-	box-sizing: border-box;
-    -moz-box-sizing: border-box;
 }
 
 ul.chat-members li {
 	font-weight: bold;
-	width: 120px;
 	color: black;
+	width: 132px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	height: 32px;
@@ -51,6 +84,9 @@ ul.chat-members li {
 	margin-bottom: 3px;
 	overflow: hidden;
 	line-height: 32px;
+	transition: background-color 0.2s linear, opacity 0.2s linear, border-color 0.2s linear;
+	-webkit-transition: background-color 0.2s linear, opacity 0.2s linear, border-color 0.2s linear;
+	-moz-transition: background-color 0.2s linear, opacity 0.2s linear, border-color 0.2s linear;	
 }
 
 ul.chat-members li.afk:not(.typing) {
@@ -68,7 +104,10 @@ ul.chat-members li.typing {
 	background: rgba(235, 235, 235, 0.2) url(chat-typing.png) right bottom no-repeat;
  }
  
- ul.chat-members li span.avatar {
+ul.chat-members li.typing.pulse {
+}
+
+ul.chat-members li span.avatar {
 float: left;
 border: 1px solid #EBF7FF;
 border-radius: 4px;
@@ -78,101 +117,85 @@ margin-top: -3px;
 margin-bottom: -6px;
  }
  
- ul.chat-members li img {
+ul.chat-members li img {
    max-width: 32px;
    max-height: 32px;
    margin: 1px;
- }
+}
  
- ul.chat-members li b {
+ul.chat-members li b {
 margin-left: 5px;
- }
+}
 
 div.chat ul.chat-msg {
 	margin: 0;
-	margin-right: 160px;
 	padding-left: 0;
 	overflow-y: auto;
-	z-index: 1;
+	max-height: 100%;
 }
 
-div.chat form.chat-inner {
-	border-top: 2px solid #c0c0c0;
-}
-
-div.chat-full-screen {
-	width: 100% !important;
-	height: 100% !important;
-	min-width: auto !important;
-	max-width: none !important;
-	right: 0 !important;
-	box-sizing: border-box;
-    -moz-box-sizing: border-box;	
-}
-
-div.chat-full-screen div.chat-cont {
-	height: 100%;
-	margin-bottom: 0 !important;
-}
-
-div.chat-full-screen .chat-inner>table {
-	position: absolute;
-	bottom: 2px;
-}
-
-div.chat .align-bottom {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	min-height: 43px;
-	padding-right: 3px;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	z-index: 2;
-}
-
-div.chat .align-right {
-	position: absolute;
-	top: 36px;
-	right: 3px;
-	width: 160px;
-	height: 100%;
-	border-bottom: 35px solid black;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	z-index: 3;
-}
-
-div.chat .form {
+div.chat .chat-resize-main {
 	position: relative;
+    min-height: 48px;
+    height: auto;
 	margin-right: 160px;
-	min-height: 42px;
 }
 
-div.chat .form .input {
-	padding: 2px 5px;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	min-height: 43px;
-	box-shadow: 1px -3px 0 -1.5px #ccc;
+div.chat .chat-resize-inner {
+    white-space: pre-line;
+    word-wrap: break-word;
+    font-size: 1em;
+    font-family: Arial;
+    padding: 5px;
+    visibility: hidden;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+	white-space: -moz-pre-wrap;
+	/* @alternate */ white-space: -pre-wrap;
+	/* @alternate */ white-space: -o-pre-wrap;
+	/* @alternate */ white-space: pre-wrap;
+}
+
+div.chat .chat-resize-inner:after {
+    content: ".";
+    visibility: hidden;
+}
+
+div.chat #chat-resize-textarea {
 	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	max-height: 300px;
-	overflow-y: auto;
-	cursor: text;
-	word-wrap: break-word;
-	background: white;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    top: 0;
+    left: 0;
+    color: #333;
+    overflow: hidden;
+    font-size: 1em;
+    font-family: Arial;
+    padding: 4px;
+    border: 1px solid grey;
+    resize: none;
+    box-shadow: inset 0 -1px 1px -1px grey;
 }
 
-div.chat .align-right button {
-	width: 150px;
-	margin: 0 auto;
-	height: 40px;
-	position: relative;
-	top: 2px;
+div.chat .chat-input-space {
+	margin: 0px 0px 0px 0px;
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	width: 100%;
+	z-index: 10000;
+}
+
+div.chat .chat-input-space button {
+	position: absolute;
+	right: 0px;
+	bottom: -1px;
+	height: 49px;
+	width: 160px;
 }
 
 div.chat span {
@@ -204,8 +227,11 @@ div.chat li>span.ln {
 	z-index: 1;
 	background: #F6F6F6;
 	padding: 5px;
-	white-space: pre-wrap;
-	word-wrap: break-word;
+	white-space: -moz-pre-wrap;
+	/* @alternate */ white-space: -pre-wrap;
+	/* @alternate */ white-space: -o-pre-wrap;
+	/* @alternate */ white-space: pre-wrap;
+	/* @alternate */ word-wrap: break-word;
 	max-height: 100px;
 	overflow-y: auto;
 	border-radius: 4px;
@@ -216,17 +242,29 @@ div.chat-show span.chat-open {
 	visibility: hidden;
 }
 
-form.chat-inner,div.chat ul,div.chat button,div.chat input,div.chat p.chat-login,div.chat span.chat-close,div.chat span.chat-fs,div.chat span.chat-br
+div.chat-inner,form.chat-input-space,div.chat ul,div.chat button,div.chat input,div.chat p.chat-login,div.chat span.chat-close,div.chat span.chat-fs,div.chat span.chat-br
 	{
 	display: none;
 	visibility: hidden;
 }
 
-div.chat-show form.chat-inner,div.chat-show ul,div.chat-show button,div.chat-show input,div.chat-show p.chat-login,div.chat-show span.chat-close,div.chat-show span.chat-fs,div.chat-show span.chat-br
+div.chat-show div.chat-inner,div.chat-show form.chat-input-space,div.chat-show ul,div.chat-show button,div.chat-show input,div.chat-show p.chat-login,div.chat-show span.chat-close,div.chat-show span.chat-fs,div.chat-show span.chat-br
 	{
 	display: inherit !important;
 	visibility: visible !important;
 }
+
+/*div.chat button {
+	background: none repeat scroll 0 0 #DEDEDE;
+	border: 1px solid #ABADB3;
+	color: #707070;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 5px 10px;
+	float: right;
+	width: 80px;
+	height: 31px;
+}*/
 
 div.chat h4 {
 	margin: 0;
