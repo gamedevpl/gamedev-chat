@@ -49,6 +49,6 @@ window["loadQueries"] = function(queries, elements) {
 	})
 }
 
-require(['../client/main.js'], function(Chat) {
+require(['Chat'], function(Chat) {
 	window["chat"] = new Chat();
 });
