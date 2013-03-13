@@ -26,7 +26,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 						chat.msgNode.removeChild(chat.msgNode.firstChild);
 						chat.msgCount--;
 					}
-				chat.msgNode.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
+					chat.msgNode.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
 
 				if (!this.scrollBlock)
 					chat.msgNode.scrollTop = chat.msgNode.scrollHeight;
@@ -69,6 +69,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 				chat.submitNode.push(node);
 				chat.msgCount++;
 				input.value = '';
+				document.querySelector('.chat-resize-inner').innerHTML = '';
 				if (chat.updateTimeout) {
 					clearTimeout(chat.updateTimeout);
 					chat.update();
@@ -418,6 +419,10 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 
 			this.node._onquery = function() {
 				dojo.query('textarea', this).connect("onkeydown", function(event) {
+						var inner = document.querySelector('.chat-resize-inner'), textarea = document.querySelector('#chat-resize-textarea');
+						textarea.addEventListener("keydown", function() {
+							setTimeout(function(){inner.innerHTML = textarea.value;},0);
+						}, 0);
 						if (event.keyCode == 27)
 							chat.close();
 						if (event.keyCode == 13 && !event.shiftKey) {
