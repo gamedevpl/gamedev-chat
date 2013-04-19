@@ -13,6 +13,7 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 			var node = this.node = dojo.create('div', {
 						className: 'chat'
 					}, dojo.body(), 'last');
+			var uploadListeners = [];
 
 			function getSetting(name, defaultValue) {
 				return dojo.query('.chat-settings .' + name, node).map(function(el) {
@@ -459,7 +460,28 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 					});
 				if (dojo.cookie('/gamedev/chat-open') == 'true')
 					dojo.publish('/gamedev/chat-open');
-			}
+															
+				node.addEventListener("dragenter", function dragenter(e) {
+					  e.stopPropagation();
+					  e.preventDefault();
+					}, false);
+				node.addEventListener("dragover", function dragenter(e) {
+					e.stopPropagation();
+					e.preventDefault();
+				}, false);
+				node.addEventListener("dragleave", function dragenter(e) {
+				});					
+				node.addEventListener("drop", function (e) {
+					e.stopPropagation();
+					e.preventDefault();
+					uploadListeners.some(function(listener) {
+						listener(e);
+					});
+				});
+			}			
+			this["uploadListener"] = function(listener) {
+				uploadListeners.push(listener);
+			};
 			this["placeNode"] = function(el) {
 				var ref = chat.msgNode.lastChild;
 				if (!ref || ref.id < el.id)
