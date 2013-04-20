@@ -475,7 +475,11 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 					e.stopPropagation();
 					e.preventDefault();
 					uploadListeners.some(function(listener) {
-						listener(e);
+						dojo.query('textarea, button', node).attr("disabled", "disabled");
+						listener(e).then(function(urls) {
+							dojo.query('textarea', node)[0].value += urls.join('\n');
+							dojo.query('textarea, button', node).removeAttr("disabled");
+						});
 					});
 				});
 			}			
