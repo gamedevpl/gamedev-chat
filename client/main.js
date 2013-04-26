@@ -460,27 +460,196 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 					});
 				if (dojo.cookie('/gamedev/chat-open') == 'true')
 					dojo.publish('/gamedev/chat-open');
-															
-				node.addEventListener("dragenter", function dragenter(e) {
-					  e.stopPropagation();
-					  e.preventDefault();
+				
+				var chatNode = node;
+					
+				function connectDropEvents(node) {
+					var deferred = new dojo.Deferred();
+					
+					node.addEventListener("dragenter", function dragenter(e) {
+						  e.stopPropagation();
+						  e.preventDefault();
+						}, false);
+					node.addEventListener("dragover", function dragenter(e) {
+						e.stopPropagation();
+						e.preventDefault();
+						dojo.query(node).parents('.drag-drop').addClass('drag-over');
 					}, false);
-				node.addEventListener("dragover", function dragenter(e) {
-					e.stopPropagation();
-					e.preventDefault();
-				}, false);
-				node.addEventListener("dragleave", function dragenter(e) {
-				});					
-				node.addEventListener("drop", function (e) {
-					e.stopPropagation();
-					e.preventDefault();
-					uploadListeners.some(function(listener) {
-						dojo.query('textarea, button', node).attr("disabled", "disabled");
-						listener(e).then(function(urls) {
-							dojo.query('textarea', node)[0].value += urls.join('\n');
-							dojo.query('textarea, button', node).removeAttr("disabled");
+					node.addEventListener("dragleave", function dragenter(e) {
+						dojo.query(node).parents('.drag-drop').removeClass('drag-over');
+					});					
+					node.addEventListener("drop", function (e) {
+						e.stopPropagation();
+						e.preventDefault();
+						deferred.resolve();
+						uploadListeners.some(function(listener) {
+							dojo.query('textarea, button', chatNode).attr("disabled", "disabled");
+							listener(e.dataTransfer.files).then(function(urls) {
+								dojo.query('textarea', chatNode)[0].value += urls.join('\n');
+								dojo.query('textarea, button', chatNode).removeAttr("disabled");																
+							});
 						});
 					});
+					
+					return deferred;
+				}
+				connectDropEvents(node);
+				
+				var gistNode = dojo.create('div', { style: "width: 54px; height: 50px; position: absolute; right: 60px; top: -60px; cursor: pointer", 
+					 innerHTML: '<i class="icon-github-alt icon-3x"></i>'}, dojo.query('.chat-input-space', node)[0], 'last');
+				dojo.connect(gistNode, "click", function() {
+					require([ "dijit/Dialog"], function(Dialog){
+				        gistDialog = new Dialog({
+				            title: "Gist",
+				            content: "",
+				            style: "width: 800px; z-index: 10000; text-align: center"								
+				        });
+				        var textarea = dojo.create('textarea', { placeholder: 'Przeciągnij plik źródłowy z pulpitu lub wklej jego fragment, aby stworzyć nowego Gista.',
+				        	style: { width: '100%', height: '200px'} }, gistDialog.containerNode);
+				        connectDropEvents(textarea).then(function() {
+				        	gistDialog.destroy();
+				        });
+				        
+				        require(["dijit/form/Button"], function(Button){
+				  			var buttons = [];
+				  	        buttons.push(new Button({
+				  	            label: "<i class=\"icon-github-alt\"> </i> Upload",
+				  	            onClick: function(){
+				  	            	
+									uploadListeners.some(function(listener) {
+										listener([new Blob([textarea.value], {type: 'text/plain'})]).then(function(urls) {					
+											dojo.query('textarea', chatNode)[0].value += urls.join('\n');
+											dojo.query('textarea, button', chatNode).removeAttr("disabled");
+											gistDialog.destroy();
+										})
+									});
+									
+									buttons.some(function(button) { button.setAttribute("disabled", true) });
+				  	            }
+				  	        }, dojo.create('span', {}, gistDialog.containerNode, 'last')));
+				  	        
+				  	        buttons.push(new Button({
+				  	            label: "Anuluj",
+				  	            onClick: function(){
+				  	            	gistDialog.destroy();
+				  	            }
+				  	        }, dojo.create('span', {}, gistDialog.containerNode, 'last')));
+				  	    });
+				        
+				        gistDialog.show();
+					});
+				});
+				
+				var uploadNode = dojo.create('div', { style: "width: 54px; height: 50px; position: absolute; right: 0px; top: -60px; cursor: pointer", 
+					 innerHTML: '<i class="icon-upload-alt icon-3x"></i>'}, dojo.query('.chat-input-space', node)[0], 'last');
+				dojo.connect(uploadNode, "click", function() {
+					require([ "dijit/Dialog"], function(Dialog){
+				        uploadDialog = new Dialog({
+				            title: "Upload",
+				            content: "",
+				            style: "width: 800px; z-index: 10000"								
+				        });
+				        var dropTarget = dojo.create('div', {className: 'drop-target'}, uploadDialog.containerNode, 'last');
+				        dojo.create('div', {className: 'drop-type file-select', innerHTML: 'Wybierz plik z dysku:<form action="/upload/" enctype="multipart/form-data" method="post" onsubmit="return false"><div class="upload-field"><input type="file" name="upload" class="upload-file"/><span><i class="icon-upload icon-3x"> </i></span></div></form>'}, dropTarget, 'last');
+				        dojo.create('div', {className: 'drop-type drag-drop', innerHTML: 'lub przeciągnij plik z pulpitu do okna przeglądarki:<form><i class="icon-paste icon-3x"> </i></form>'}, dropTarget, 'last');
+				        dojo.create('div', {className: 'clb'}, dropTarget, 'last');
+				        
+				        connectDropEvents(dojo.query('.drop-type.drag-drop form', dropTarget)[0]).then(function() {
+				        	uploadDialog.destroy();
+				        });
+				        
+				        dojo.query('.drop-type.file-select form input.upload-file').on("change", function(event) {
+				        	var files = this.files;
+				        	uploadDialog.destroy();
+				        	uploadListeners.some(function(listener) {
+								dojo.query('textarea, button', chatNode).attr("disabled", "disabled");
+								listener(files).then(function(urls) {
+									dojo.query('textarea', chatNode)[0].value += urls.join('\n');
+									dojo.query('textarea, button', chatNode).removeAttr("disabled");																
+								});
+							});
+				        });
+				        
+				        uploadDialog.show();
+					});
+				});
+				
+				dojo.query('textarea', chatNode).on('paste', function(event) {
+					var files = [];
+					for(var i = 0; i < event.clipboardData.items.length; i++)
+						files.push(event.clipboardData.items[i].getAsFile());
+					var file = files[0];
+					if(file) {
+						require([ "dijit/Dialog", "dojox/layout/ResizeHandle", "dojo/dnd/move" ], function(Dialog, ResizeHandle, move){
+						  	cropDialog = new Dialog({
+					            title: "Upload",
+					            content: "",
+					            style: "width: 800px; z-index: 10000; text-align: center; background: white; box-shadow: 0px 0px 10px rgba(0,0,0,0.3)"
+					        });
+						  	
+						  	dojo.style(cropDialog.containerNode, {margin: "10px 8px", padding: "0px"});
+						  	
+						  	var img = dojo.create('img', {src: window.URL.createObjectURL(file), style: {width: '100%'}}, cropDialog.containerNode, 'first');
+						  	
+						  	dojo.connect(img, 'load', function() {						  	
+							  	var rect = [img.offsetWidth/4, img.offsetHeight/4, img.offsetWidth/4*3, img.offsetHeight/4*3];
+							  	var rectEl = dojo.create('div', {style: {position: "absolute", background: "rgba(0,0,0,0.1)", border: '1px solid red',
+							  		left: img.width/4+'px', top: img.height/4+'px',
+							  		width: img.width/4*2+'px', height: img.height/4*2+'px'}}, cropDialog.containerNode, 'first');
+							  	var resizeHandle = new ResizeHandle({targetContainer: rectEl, animateSizing: false,
+							  		constrainMax: true, maxWidth: img.width - rect[0], maxHeight: img.height - rect[1] });
+							  	resizeHandle.placeAt(rectEl);
+							  	
+							  	var constraint = {l : 0, t: 0, w: img.width - (rect[2]-rect[0]), h: img.height - (rect[3]-rect[1])};
+							  	var moveable = new move.constrainedMoveable(rectEl, {constraints: function() { 
+							  		return constraint;
+								}});		
+							  	
+							  	resizeHandle.onResize = function(event) {
+							  		rect = [rectEl.offsetLeft, rectEl.offsetTop, rectEl.offsetLeft + rectEl.offsetWidth, rectEl.offsetTop  + rectEl.offsetHeight]
+							  		constraint = {l : 0, t: 0, w: img.width - (rect[2]-rect[0]), h: img.height - (rect[3]-rect[1])};
+							  	}
+							  	
+							  	moveable.onMoved = function() {
+							  		rect = [rectEl.offsetLeft, rectEl.offsetTop, rectEl.offsetLeft + rectEl.offsetWidth, rectEl.offsetTop  + rectEl.offsetHeight];
+							  		resizeHandle.maxSize = { w : img.width-rect[0], h: img.height-rect[1] };
+							  	}
+							  	
+							  	require(["dijit/form/Button"], function(Button){
+							  			var buttons = [];
+							  	        buttons.push(new Button({
+							  	            label: "<i class=\"icon-upload\"> </i> Upload",
+							  	            onClick: function(){
+							  	            	var rect = [rectEl.offsetLeft, rectEl.offsetTop, 
+							  	            				rectEl.offsetLeft + rectEl.offsetWidth, 
+							  	            				rectEl.offsetTop  + rectEl.offsetHeight];
+												uploadListeners.some(function(listener) {
+													listener([file], [rect.map(function(el, idx) { return el / (idx % 2 == 0 ? img.offsetWidth : img.offsetHeight) })]).then(function(urls) {					
+														dojo.query('textarea', chatNode)[0].value += urls.join('\n');
+														dojo.query('textarea, button', chatNode).removeAttr("disabled");
+														cropDialog.destroy();
+													})
+												});
+												
+												buttons.some(function(button) { button.setAttribute("disabled", true) });
+												
+												dojo.style(rectEl, { background: "rgba(0,0,0,0.5)", pointerEvents: "none"});
+												dojo.style(img, { pointerEvents: "none"});
+							  	            }
+							  	        }, dojo.create('span', {}, cropDialog.containerNode, 'last')));
+							  	        
+							  	      buttons.push(new Button({
+							  	            label: "Anuluj",
+							  	            onClick: function(){
+							  	            	cropDialog.destroy();
+							  	            }
+							  	        }, dojo.create('span', {}, cropDialog.containerNode, 'last')));
+							  	});
+						  	})
+							
+						  	cropDialog.show();						  	
+						});
+					}
 				});
 			}			
 			this["uploadListener"] = function(listener) {
