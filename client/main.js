@@ -1,4 +1,4 @@
-define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], function(cookie) {
+define("Chat", ["dojo/cookie", "Uploader" , "dojo/window", "dojo/NodeList-traverse"], function(cookie, Uploader) {
 		function align10(v) {
 			v = parseInt(v);
 			if (!v)
@@ -462,83 +462,60 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 					dojo.publish('/gamedev/chat-open');
 				
 				var chatNode = node;
-					
-				function connectDropEvents(node) {
+				
+				/* upload handler */
+				function uploadHandler(urls) {
+					dojo.query('textarea', chatNode)[0].value += urls.join('\n');
+					dojo.query('textarea, button', chatNode).removeAttr("disabled");																
+				}
+				
+				/* execute upload */
+				function executeUpload(args) {
 					var deferred = new dojo.Deferred();
 					
-					node.addEventListener("dragenter", function dragenter(e) {
-						  e.stopPropagation();
-						  e.preventDefault();
-						}, false);
-					node.addEventListener("dragover", function dragenter(e) {
-						e.stopPropagation();
-						e.preventDefault();
-						dojo.query(node).parents('.drag-drop').addClass('drag-over');
-					}, false);
-					node.addEventListener("dragleave", function dragenter(e) {
-						dojo.query(node).parents('.drag-drop').removeClass('drag-over');
-					});					
-					node.addEventListener("drop", function (e) {
-						e.stopPropagation();
-						e.preventDefault();
-						deferred.resolve();
-						uploadListeners.some(function(listener) {
-							dojo.query('textarea, button', chatNode).attr("disabled", "disabled");
-							listener(e.dataTransfer.files).then(function(urls) {
-								dojo.query('textarea', chatNode)[0].value += urls.join('\n');
-								dojo.query('textarea, button', chatNode).removeAttr("disabled");																
-							});
-						});
+					dojo.query('textarea, button', chatNode).attr("disabled", "disabled");
+					
+					uploadListeners.some(function(listener) {
+						listener.apply(null, args).then(function(urls) {					
+							uploadHandler(urls);
+							deferred.resolve(urls);
+						})
 					});
 					
-					return deferred;
+					return deferred;					
 				}
-				connectDropEvents(node);
+
+				/* drag&drop */
+				function handleDrop(files) {
+					if(Uploader.isImageType(files[0].type))
+						uploadImage(files[0]);
+					else
+						uploadGist(files[0]);
+				};
 				
+				Uploader.connectDropEvents(node, handleDrop);				
+				
+				/* gists */
+				function uploadGist(file) {
+					Uploader.gistDialog(file).then(function(result) {
+						executeUpload([[result.file]]).then(function() {
+							result.gistDialog.destroy();
+						});
+					});
+				}
+				
+				/* images */
+				function uploadImage(file) {
+					Uploader.cropDialog(file).then(function(result) {
+						executeUpload([[file], [result.rect]]).then(function() {
+							result.cropDialog.destroy();
+						});						
+					});
+				}
+								
 				var gistNode = dojo.create('div', { style: "width: 54px; height: 50px; position: absolute; right: 60px; top: -60px; cursor: pointer", 
 					 innerHTML: '<i class="icon-github-alt icon-3x"></i>'}, dojo.query('.chat-input-space', node)[0], 'last');
-				dojo.connect(gistNode, "click", function() {
-					require([ "dijit/Dialog"], function(Dialog){
-				        gistDialog = new Dialog({
-				            title: "Gist",
-				            content: "",
-				            style: "width: 800px; z-index: 10000; text-align: center"								
-				        });
-				        var textarea = dojo.create('textarea', { placeholder: 'Przeciągnij plik źródłowy z pulpitu lub wklej jego fragment, aby stworzyć nowego Gista.',
-				        	style: { width: '100%', height: '200px'} }, gistDialog.containerNode);
-				        connectDropEvents(textarea).then(function() {
-				        	gistDialog.destroy();
-				        });
-				        
-				        require(["dijit/form/Button"], function(Button){
-				  			var buttons = [];
-				  	        buttons.push(new Button({
-				  	            label: "<i class=\"icon-github-alt\"> </i> Upload",
-				  	            onClick: function(){
-				  	            	
-									uploadListeners.some(function(listener) {
-										listener([new Blob([textarea.value], {type: 'text/plain'})]).then(function(urls) {					
-											dojo.query('textarea', chatNode)[0].value += urls.join('\n');
-											dojo.query('textarea, button', chatNode).removeAttr("disabled");
-											gistDialog.destroy();
-										})
-									});
-									
-									buttons.some(function(button) { button.setAttribute("disabled", true) });
-				  	            }
-				  	        }, dojo.create('span', {}, gistDialog.containerNode, 'last')));
-				  	        
-				  	        buttons.push(new Button({
-				  	            label: "Anuluj",
-				  	            onClick: function(){
-				  	            	gistDialog.destroy();
-				  	            }
-				  	        }, dojo.create('span', {}, gistDialog.containerNode, 'last')));
-				  	    });
-				        
-				        gistDialog.show();
-					});
-				});
+				dojo.connect(gistNode, "click", uploadGist.bind(null, null));
 				
 				var uploadNode = dojo.create('div', { style: "width: 54px; height: 50px; position: absolute; right: 0px; top: -60px; cursor: pointer", 
 					 innerHTML: '<i class="icon-upload-alt icon-3x"></i>'}, dojo.query('.chat-input-space', node)[0], 'last');
@@ -554,20 +531,14 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 				        dojo.create('div', {className: 'drop-type drag-drop', innerHTML: 'lub przeciągnij plik z pulpitu do okna przeglądarki:<form><i class="icon-paste icon-3x"> </i></form>'}, dropTarget, 'last');
 				        dojo.create('div', {className: 'clb'}, dropTarget, 'last');
 				        
-				        connectDropEvents(dojo.query('.drop-type.drag-drop form', dropTarget)[0]).then(function() {
+				        Uploader.connectDropEvents(dojo.query('.drop-type.drag-drop form', dropTarget)[0], function(files) {
+				        	handleDrop(files);
 				        	uploadDialog.destroy();
 				        });
 				        
 				        dojo.query('.drop-type.file-select form input.upload-file').on("change", function(event) {
-				        	var files = this.files;
+				        	handleDrop(this.files);
 				        	uploadDialog.destroy();
-				        	uploadListeners.some(function(listener) {
-								dojo.query('textarea, button', chatNode).attr("disabled", "disabled");
-								listener(files).then(function(urls) {
-									dojo.query('textarea', chatNode)[0].value += urls.join('\n');
-									dojo.query('textarea, button', chatNode).removeAttr("disabled");																
-								});
-							});
 				        });
 				        
 				        uploadDialog.show();
@@ -580,75 +551,10 @@ define("Chat", ["dojo/cookie", "dojo/window", "dojo/NodeList-traverse"], functio
 						files.push(event.clipboardData.items[i].getAsFile());
 					var file = files[0];
 					if(file) {
-						require([ "dijit/Dialog", "dojox/layout/ResizeHandle", "dojo/dnd/move" ], function(Dialog, ResizeHandle, move){
-						  	cropDialog = new Dialog({
-					            title: "Upload",
-					            content: "",
-					            style: "width: 800px; z-index: 10000; text-align: center; background: white; box-shadow: 0px 0px 10px rgba(0,0,0,0.3)"
-					        });
-						  	
-						  	dojo.style(cropDialog.containerNode, {margin: "10px 8px", padding: "0px"});
-						  	
-						  	var img = dojo.create('img', {src: window.URL.createObjectURL(file), style: {width: '100%'}}, cropDialog.containerNode, 'first');
-						  	
-						  	dojo.connect(img, 'load', function() {						  	
-							  	var rect = [img.offsetWidth/4, img.offsetHeight/4, img.offsetWidth/4*3, img.offsetHeight/4*3];
-							  	var rectEl = dojo.create('div', {style: {position: "absolute", background: "rgba(0,0,0,0.1)", border: '1px solid red',
-							  		left: img.width/4+'px', top: img.height/4+'px',
-							  		width: img.width/4*2+'px', height: img.height/4*2+'px'}}, cropDialog.containerNode, 'first');
-							  	var resizeHandle = new ResizeHandle({targetContainer: rectEl, animateSizing: false,
-							  		constrainMax: true, maxWidth: img.width - rect[0], maxHeight: img.height - rect[1] });
-							  	resizeHandle.placeAt(rectEl);
-							  	
-							  	var constraint = {l : 0, t: 0, w: img.width - (rect[2]-rect[0]), h: img.height - (rect[3]-rect[1])};
-							  	var moveable = new move.constrainedMoveable(rectEl, {constraints: function() { 
-							  		return constraint;
-								}});		
-							  	
-							  	resizeHandle.onResize = function(event) {
-							  		rect = [rectEl.offsetLeft, rectEl.offsetTop, rectEl.offsetLeft + rectEl.offsetWidth, rectEl.offsetTop  + rectEl.offsetHeight]
-							  		constraint = {l : 0, t: 0, w: img.width - (rect[2]-rect[0]), h: img.height - (rect[3]-rect[1])};
-							  	}
-							  	
-							  	moveable.onMoved = function() {
-							  		rect = [rectEl.offsetLeft, rectEl.offsetTop, rectEl.offsetLeft + rectEl.offsetWidth, rectEl.offsetTop  + rectEl.offsetHeight];
-							  		resizeHandle.maxSize = { w : img.width-rect[0], h: img.height-rect[1] };
-							  	}
-							  	
-							  	require(["dijit/form/Button"], function(Button){
-							  			var buttons = [];
-							  	        buttons.push(new Button({
-							  	            label: "<i class=\"icon-upload\"> </i> Upload",
-							  	            onClick: function(){
-							  	            	var rect = [rectEl.offsetLeft, rectEl.offsetTop, 
-							  	            				rectEl.offsetLeft + rectEl.offsetWidth, 
-							  	            				rectEl.offsetTop  + rectEl.offsetHeight];
-												uploadListeners.some(function(listener) {
-													listener([file], [rect.map(function(el, idx) { return el / (idx % 2 == 0 ? img.offsetWidth : img.offsetHeight) })]).then(function(urls) {					
-														dojo.query('textarea', chatNode)[0].value += urls.join('\n');
-														dojo.query('textarea, button', chatNode).removeAttr("disabled");
-														cropDialog.destroy();
-													})
-												});
-												
-												buttons.some(function(button) { button.setAttribute("disabled", true) });
-												
-												dojo.style(rectEl, { background: "rgba(0,0,0,0.5)", pointerEvents: "none"});
-												dojo.style(img, { pointerEvents: "none"});
-							  	            }
-							  	        }, dojo.create('span', {}, cropDialog.containerNode, 'last')));
-							  	        
-							  	      buttons.push(new Button({
-							  	            label: "Anuluj",
-							  	            onClick: function(){
-							  	            	cropDialog.destroy();
-							  	            }
-							  	        }, dojo.create('span', {}, cropDialog.containerNode, 'last')));
-							  	});
-						  	})
-							
-						  	cropDialog.show();						  	
-						});
+						if(Uploader.isImageType(file.type))
+							uploadImage(file);
+						else
+							uploadGist(file);
 					}
 				});
 			}			
