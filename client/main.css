@@ -20,7 +20,6 @@ div.chat:not(.chat-show) {
 }
 
 div.chat.chat-show {
-    width: 50%;
  	height: 100%;
 	border-radius: 0;
 }
@@ -210,7 +209,7 @@ div.chat li>span.ts {
 }
 
 div.chat li>span.ts+strong {
-	width: 10%;
+	width: 18%;
 	margin-left: 5px;
 	float: left;
 	text-overflow: ellipsis;
