@@ -22,7 +22,6 @@ div.chat-full-screen {
 	border: 0;
 	width: 100% !important;
 	height: 100% !important;
-	min-width: none !important;
 	max-width: none !important;
 }
 
@@ -355,6 +354,19 @@ div.chat li.-special>i {
 }
 
 /* Animacje */
+@keyframes typing {
+    0% {
+        width: 0;
+    }
+    
+    75% {
+        width: 50px;
+    }
+
+    100% {
+        width: 100px;
+    }
+}
 @-webkit-keyframes typing {
     0% {
         width: 0;

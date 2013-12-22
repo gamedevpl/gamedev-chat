@@ -414,9 +414,9 @@ define("Chat", ["dojo/cookie", "http://www.gamedev.pl/static/287/uploader/main.j
 							setTimeout(function(){
                                 inner.innerHTML = textarea.value;
                                 if(inner.offsetHeight >= 48)
-                                    msgs.style.maxHeight = dojo.window.getBox().h - 52 - inner.offsetHeight;
+                                    msgs.style.maxHeight = dojo.window.getBox().h - 52 - inner.offsetHeight + 'px';
                                 else
-                                    msgs.style.maxHeight = dojo.window.getBox().h - 100;
+                                    msgs.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
                             },0);
 						}, 0);
 						if (event.keyCode == 27)
