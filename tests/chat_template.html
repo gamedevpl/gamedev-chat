@@ -1,22 +1,39 @@
 <!-- chat template -->
 <div class="chat-cont">
+
+<header>
+    <div class="nav">
+        <span class="chat-fs" onclick="dojo.toggleClass(chat.node, 'chat-full-screen');">[Wincyj]</span>
+        <span class="chat-close" onclick="chat.close()" title="[ESC]">[Zamknij]</span>
+        <span class="chat-open" onclick="chat.show()">[Pokaż]</span>
+    </div>
+    <div id="title">
+        #gamedevpl<span id="chat-uread"></span>
+    </div>
+</header>
 <div class="chat-inner">
-	<ul class="chat-members"></ul>
+	<ul class="chat-members">
+        <li class="u_tanner afk" onclick="chat.memberClick.call(this)">
+            <span class="avatar user-avatar_tanner"><img src="http://www.gamedev.pl/images/m/882,logoavatarsquare150png.jpg"></span>
+            <span class="name-shadow">Tanner</span><span class="name">Tanner</span>
+        </li>
+        <li class="u_tanner typing" onclick="chat.memberClick.call(this)">
+            <span class="avatar user-avatar_tanner"><img src="http://www.gamedev.pl/images/m/882,logoavatarsquare150png.jpg"></span>
+            <span class="name-shadow">Tanner</span><span class="name">Tanner</span>
+        </li>
+        <li class="u_tanner typing" onclick="chat.memberClick.call(this)">
+            <span class="avatar user-avatar_tanner"><img src="http://www.gamedev.pl/images/m/882,logoavatarsquare150png.jpg"></span>
+            <span class="name-shadow">TannerNetwork</span><span class="name">TannerNetwork</span>
+        </li>
+        <li class="u_tanner" onclick="chat.memberClick.call(this)">
+            <span class="avatar user-avatar_tanner"><img src="http://www.gamedev.pl/images/m/882,logoavatarsquare150png.jpg"></span>
+            <span class="name-shadow">TannerNetwork</span><span class="name">TannerNetwork</span>
+        </li>
+    </ul>
 	<ul class="chat-msg"></ul>
 	<div class="clb"></div>
 	<strong class="name" style="display: none">Edytorek</strong>
 </div>
-<header>
-    <span class="chat-close" onclick="chat.close()">Zamknij (ESC)</span>
-    <span class="chat-br">|</span>
-    <span class="chat-fs" onclick="dojo.toggleClass(chat.node, 'chat-full-screen');"> Full screen
-    </span>
-    <span class="chat-open" onclick="chat.show()">Pokaż</span>
-    <h4>
-        #warsztat
-        <span id="chat-uread"></span>
-    </h4>
-</header>
 <form class="chat-input-space" onsubmit="chat.submit(this); return false;">
 	<button class="button"> Wyślij </button>
 	<div class="chat-resize-main">
@@ -24,4 +41,5 @@
 		<textarea id="chat-resize-textarea" name="msg"></textarea>
 	</div>
 </form>
+
 </div>
