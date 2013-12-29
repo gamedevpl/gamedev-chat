@@ -224,7 +224,7 @@ div.chat #chat-resize-textarea {
     -webkit-box-sizing: border-box;
     top: 0;
     left: 0;
-    color: #333;
+    /*color: #333;*/
     padding: 4px;
     border: none;
     border-top: 2px solid #1af;
@@ -233,6 +233,8 @@ div.chat #chat-resize-textarea {
 	font-family: tahoma,verdana,arial,sans-serif;
 	font-size: smaller;
     outline: none;
+    background: #222;
+    color: #f6f6f6;
 }
 
 div.chat .chat-input-space {
@@ -300,7 +302,9 @@ div.chat li>span.ln {
 	position: relative;
 	top: -3px;
 	z-index: 1;
-	background: #F6F6F6;
+	background: #222;
+	color: #F6F6F6;
+	/*background: #F6F6F6;*/
 	padding: 5px;
 	white-space: -moz-pre-wrap;
 	/* @alternate */ white-space: -pre-wrap;
@@ -313,7 +317,7 @@ div.chat li>span.ln {
 }
 
 div.chat li:nth-child(even) > span.ln {
-    border-color: #1af !important;   
+    border-color: #1af !important;
 }
 
 li.chli strong {
