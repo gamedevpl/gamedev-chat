@@ -22,12 +22,17 @@ define("Chat", ["dojo/cookie", "http://www.gamedev.pl/static/287/uploader/main.j
 			}
 
 			this["shrink"] = function() {
+                var inner = document.querySelector('.chat-resize-inner');
 				if (!this.scrollBlock)
 					while (chat.msgCount > 1000) {
 						chat.msgNode.removeChild(chat.msgNode.firstChild);
 						chat.msgCount--;
 					}
 					chat.msgNode.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
+                    if(inner.offsetHeight >= 48)
+                        chat.msgNode.style.maxHeight = dojo.window.getBox().h - 52 - inner.offsetHeight + 'px';
+                    else
+                        chat.msgNode.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
 
 				if (!this.scrollBlock)
 					chat.msgNode.scrollTop = chat.msgNode.scrollHeight;

@@ -12,7 +12,7 @@
     </div>
 </header>
 <div class="chat-inner">
-	<ul class="chat-members">
+	<ul class="chat-members chat-scrollbar">
         <li class="u_tanner afk" onclick="chat.memberClick.call(this)">
             <span class="avatar user-avatar_tanner"><img src="http://www.gamedev.pl/images/m/882,logoavatarsquare150png.jpg"></span>
             <span class="name-shadow">Tanner</span><span class="name">Tanner</span>
@@ -30,7 +30,7 @@
             <span class="name-shadow">TannerNetwork</span><span class="name">TannerNetwork</span>
         </li>
     </ul>
-	<ul class="chat-msg"></ul>
+	<ul class="chat-msg chat-scrollbar"></ul>
 	<div class="clb"></div>
 	<strong class="name" style="display: none">Edytorek</strong>
 </div>
@@ -38,7 +38,7 @@
 	<button class="button"> Wyślij </button>
 	<div class="chat-resize-main">
 		<div class="chat-resize-inner"></div>
-		<textarea id="chat-resize-textarea" name="msg"></textarea>
+		<textarea id="chat-resize-textarea" class="chat-scrollbar" name="msg"></textarea>
 	</div>
 </form>
 
