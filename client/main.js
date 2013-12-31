@@ -1,4 +1,4 @@
-define("Chat", ["dojo/cookie", "Uploader" , "dojo/window", "dojo/NodeList-traverse"], function(cookie, Uploader) {
+define("Chat", ["dojo/cookie", "http://www.gamedev.pl/static/287/uploader/main.js" , "dojo/window", "dojo/NodeList-traverse"], function(cookie, Uploader) {
 		function align10(v) {
 			v = parseInt(v);
 			if (!v)
@@ -22,12 +22,17 @@ define("Chat", ["dojo/cookie", "Uploader" , "dojo/window", "dojo/NodeList-traver
 			}
 
 			this["shrink"] = function() {
+                var inner = document.querySelector('.chat-resize-inner');
 				if (!this.scrollBlock)
 					while (chat.msgCount > 1000) {
 						chat.msgNode.removeChild(chat.msgNode.firstChild);
 						chat.msgCount--;
 					}
 					chat.msgNode.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
+                    if(inner.offsetHeight >= 48)
+                        chat.msgNode.style.maxHeight = dojo.window.getBox().h - 52 - inner.offsetHeight + 'px';
+                    else
+                        chat.msgNode.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
 
 				if (!this.scrollBlock)
 					chat.msgNode.scrollTop = chat.msgNode.scrollHeight;
@@ -57,8 +62,8 @@ define("Chat", ["dojo/cookie", "Uploader" , "dojo/window", "dojo/NodeList-traver
 				if (input.value.length == 0)
 					return;
 
-				if (input.value.length > 2048)
-					input.value = input.value.substring(0, 2048);
+				if (input.value.length > 4096)
+					input.value = input.value.substring(0, 4096);
 				var dt = new Date();
 				var node = dojo.create('li', {
 						className: 'chli snt',
@@ -102,18 +107,6 @@ define("Chat", ["dojo/cookie", "Uploader" , "dojo/window", "dojo/NodeList-traver
 					var node = chat.membersHash[name];
 					if (node) {
 						dojo.toggleClass(node, 'typing', true);
-						if (node.timeout) {
-							clearTimeout(node.timeout)
-							clearInterval(node.interval);
-						}
-						node.interval = setInterval(function() {
-								dojo.toggleClass(node, 'pulse');
-							}, 500)
-						node.timeout = setTimeout(function() {
-								dojo.toggleClass(node, 'typing', false);
-								clearInterval(node.interval);
-								node.interval = node.timeout = null;
-							}, 5000)
 					}
 				},
 				'afk-true': function(el) {
@@ -134,7 +127,7 @@ define("Chat", ["dojo/cookie", "Uploader" , "dojo/window", "dojo/NodeList-traver
 					name = name.substring(name.indexOf(' ') + 1, name.length);
 					if (!chat.membersHash[name] && ! (dojo.query('.u_' + alias, chat.membersNode)[0])) {
 						chat.membersHash[name] = dojo.create('li', {
-								innerHTML: '<span class="avatar query user-avatar_' + alias + '"></span> <b>' + name + '</b>',
+								innerHTML: '<span class="avatar query user-avatar_' + alias + '"></span> <span class="name-shadow">' + name + '</span><span class="name">' + name + '</span>',
 								onclick: chat.memberClick,
 								className: 'u_' + alias
 							}, chat.membersNode, 'first')
@@ -420,9 +413,16 @@ define("Chat", ["dojo/cookie", "Uploader" , "dojo/window", "dojo/NodeList-traver
 
 			this.node._onquery = function() {
 				dojo.query('textarea', this).connect("onkeydown", function(event) {
-						var inner = document.querySelector('.chat-resize-inner'), textarea = document.querySelector('#chat-resize-textarea');
+						var inner = document.querySelector('.chat-resize-inner'), textarea = document.querySelector('#chat-resize-textarea'),
+                            msgs = document.querySelector('.chat-msg');
 						textarea.addEventListener("keydown", function() {
-							setTimeout(function(){inner.innerHTML = textarea.value;},0);
+							setTimeout(function(){
+                                inner.innerHTML = textarea.value;
+                                if(inner.offsetHeight >= 48)
+                                    msgs.style.maxHeight = dojo.window.getBox().h - 52 - inner.offsetHeight + 'px';
+                                else
+                                    msgs.style.maxHeight = dojo.window.getBox().h - 100 + 'px';
+                            },0);
 						}, 0);
 						if (event.keyCode == 27)
 							chat.close();
